@@ -1,0 +1,294 @@
+<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:WpfApp1.Controls"
+        xmlns:core="clr-namespace:WpfApp1.Core.Enums"
+        xmlns:viewModels="clr-namespace:WpfApp1.ViewModels"
+        Title="WpfType"
+        Width="1120"
+        Height="720"
+        MinWidth="860"
+        MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}"
+        FontFamily="Segoe UI"
+        TextOptions.TextFormattingMode="Display"
+        UseLayoutRounding="True">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0"
+                    Margin="0,22,0,0"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+            <TextBlock Margin="0,0,22,0"
+                       VerticalAlignment="Center"
+                       FontSize="17"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource ForegroundBrush}"
+                       Text="wpftype" />
+
+            <ItemsControl ItemsSource="{Binding Modes}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Command="{Binding DataContext.SelectModeCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"
+                                Content="{Binding Label}"
+                                Style="{StaticResource OptionButton}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <ItemsControl Margin="14,0,0,0"
+                          ItemsSource="{Binding TimeOptions}"
+                          Visibility="{Binding IsTimeMode, Converter={StaticResource BoolToVisibility}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Command="{Binding DataContext.SelectTimeCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"
+                                Content="{Binding Label}"
+                                Style="{StaticResource OptionButton}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <ItemsControl Margin="14,0,0,0"
+                          ItemsSource="{Binding WordCountOptions}"
+                          Visibility="{Binding IsWordsMode, Converter={StaticResource BoolToVisibility}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Command="{Binding DataContext.SelectWordCountCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"
+                                Content="{Binding Label}"
+                                Style="{StaticResource OptionButton}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <ToggleButton Margin="14,0,0,0"
+                          Content="#"
+                          IsChecked="{Binding IsPunctuationEnabled, Mode=TwoWay}"
+                          Style="{StaticResource ChipButton}"
+                          ToolTip="punctuation" />
+
+            <ToggleButton Content="123"
+                          IsChecked="{Binding IsNumbersEnabled, Mode=TwoWay}"
+                          Style="{StaticResource ChipButton}"
+                          ToolTip="numbers" />
+
+            <ItemsControl Margin="18,0,0,0" ItemsSource="{Binding Themes}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Background="{Binding Value, Converter={StaticResource ThemeToBrush}}"
+                                Command="{Binding DataContext.SelectThemeCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"
+                                Style="{StaticResource SwatchButton}"
+                                ToolTip="{Binding Label}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1"
+                      Margin="64,0"
+                      MaxHeight="152"
+                      VerticalAlignment="Center"
+                      Focusable="False"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Hidden">
+            <ItemsControl ItemsSource="{Binding Words}" Focusable="False">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:WordViewModel}">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                            <ItemsControl ItemsSource="{Binding Letters}" Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type viewModels:LetterViewModel}">
+                                        <Grid controls:CaretScroll.Caret="{Binding}">
+                                            <Border Width="17"
+                                                    Height="34"
+                                                    Margin="-1,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Left"
+                                                    Background="{DynamicResource AccentBrush}"
+                                                    CornerRadius="3"
+                                                    Visibility="{Binding IsCaretVisible, Converter={StaticResource BoolToVisibility}}" />
+                                            <TextBlock FontFamily="Consolas"
+                                                       FontSize="32"
+                                                       LineHeight="38"
+                                                       VerticalAlignment="Center"
+                                                       Text="{Binding Value}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{DynamicResource SubtleBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding State}" Value="{x:Static core:LetterState.Correct}">
+                                                                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding State}" Value="{x:Static core:LetterState.Wrong}">
+                                                                <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                                                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Border Width="15"
+                                    Height="34"
+                                    VerticalAlignment="Center"
+                                    Background="{DynamicResource AccentBrush}"
+                                    CornerRadius="3"
+                                    Opacity="0.85"
+                                    Visibility="{Binding IsAwaitingSeparator, Converter={StaticResource BoolToVisibility}}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Grid Grid.Row="2" Margin="64,14,64,22">
+            <ProgressBar VerticalAlignment="Top"
+                         Maximum="1"
+                         Style="{StaticResource ProgressLine}"
+                         Value="{Binding ProgressValue, Mode=OneWay}" />
+
+            <StackPanel Margin="0,18,0,0"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                <StackPanel Margin="0,0,34,0">
+                    <TextBlock Style="{StaticResource StatLabel}" Text="wpm" />
+                    <TextBlock Style="{StaticResource StatValue}" Text="{Binding Wpm}" />
+                </StackPanel>
+                <StackPanel Margin="0,0,34,0">
+                    <TextBlock Style="{StaticResource StatLabel}" Text="acc" />
+                    <TextBlock Style="{StaticResource StatValue}" Text="{Binding Accuracy, StringFormat={}{0:0.0}%}" />
+                </StackPanel>
+                <StackPanel Margin="0,0,34,0">
+                    <TextBlock Style="{StaticResource StatLabel}" Text="progress" />
+                    <TextBlock Style="{StaticResource StatValue}" Text="{Binding ProgressText}" />
+                </StackPanel>
+                <StackPanel Margin="0,0,34,0">
+                    <TextBlock Style="{StaticResource StatLabel}" Text="best" />
+                    <TextBlock Style="{StaticResource StatValue}" Text="{Binding BestWpm}" />
+                </StackPanel>
+                <Button Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        Command="{Binding RestartCommand}"
+                        Content="restart"
+                        Style="{StaticResource GhostButton}" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="0"
+              Grid.RowSpan="3"
+              Visibility="{Binding IsResultVisible, Converter={StaticResource BoolToVisibility}}">
+            <Button Command="{Binding RestartCommand}" Style="{StaticResource OverlayButton}" />
+
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource ResultCard}">
+                <StackPanel Width="620">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock HorizontalAlignment="Center"
+                                   FontSize="86"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource AccentBrush}"
+                                   Text="{Binding Result.Wpm}" />
+                        <TextBlock HorizontalAlignment="Center"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource SubtleBrush}"
+                                   Text="wpm" />
+                    </StackPanel>
+
+                    <TextBlock Margin="0,6,0,0"
+                               HorizontalAlignment="Center"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}"
+                               Text="new personal best"
+                               Visibility="{Binding Result.IsPersonalBest, Converter={StaticResource BoolToVisibility}}" />
+
+                    <UniformGrid Margin="0,26,0,0" Columns="4">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource StatLabel}" Text="accuracy" />
+                            <TextBlock Style="{StaticResource StatValue}" Text="{Binding Result.Accuracy, StringFormat={}{0:0.0}%}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource StatLabel}" Text="consistency" />
+                            <TextBlock Style="{StaticResource StatValue}" Text="{Binding Result.Consistency, StringFormat={}{0:0}%}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource StatLabel}" Text="time" />
+                            <TextBlock Style="{StaticResource StatValue}" Text="{Binding Result.DurationText}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource StatLabel}" Text="words" />
+                            <TextBlock Style="{StaticResource StatValue}" Text="{Binding Result.CorrectWords}" />
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <Border Height="120" Margin="0,22,0,0">
+                        <Polyline Points="{Binding Result.SpeedSamples, Converter={StaticResource SpeedSamplesToPoints}}"
+                                  Stretch="Fill"
+                                  Stroke="{DynamicResource AccentBrush}"
+                                  StrokeThickness="2.5"
+                                  StrokeLineJoin="Round"
+                                  StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round" />
+                    </Border>
+
+                    <TextBlock Margin="0,6,0,0"
+                               HorizontalAlignment="Center"
+                               FontSize="12"
+                               Foreground="{DynamicResource SubtleBrush}"
+                               Text="words per minute over time" />
+
+                    <Button Margin="0,24,0,0"
+                            HorizontalAlignment="Center"
+                            Command="{Binding RestartCommand}"
+                            Content="next test"
+                            Style="{StaticResource PrimaryButton}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
